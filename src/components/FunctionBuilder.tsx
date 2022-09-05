@@ -1,39 +1,19 @@
-import { useEffect, useState } from 'react';
-
-interface ExtractedProps {
-  saveFunc: (fcn: (x: number) => number) => void;
-}
-const Extracted = ({ saveFunc }: ExtractedProps) => {
-  const [func, setFunc] = useState<string>(`(x)=>x+5`);
-
-  const calculateOutput = () => {
-    const jsFunc = eval(func);
-    saveFunc(jsFunc);
-  };
-
-  return (
-    <div>
-      <label>
-        Function:
-        <input
-          type="text"
-          name="function"
-          onChange={(e) => setFunc(e.target.value)}
-        />
-      </label>
-      <input type="submit" value="Submit" onClick={calculateOutput} />
-    </div>
-  );
-};
+import React, { useEffect, useState } from 'react';
+import { FunctionStep } from '@/components/FunctionStep';
 
 export const FunctionBuilder = () => {
-  const [input, setInput] = useState<number>(3);
+  const [input, setInput] = useState<number>(0);
   const [output, setOutput] = useState<number>(0);
   const [funcs, setFuncs] = useState<((x: number) => number)[]>([]);
 
   useEffect(() => {
     setOutput(funcs.reduce((acc, f) => f(acc), input));
   }, [input, funcs]);
+
+  const addFunctionStep = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    console.log(`Get another!`);
+  };
 
   return (
     <>
@@ -45,10 +25,20 @@ export const FunctionBuilder = () => {
           onChange={(e) => setInput(Number(e.target.value))}
         />
       </label>
-      <Extracted saveFunc={(func) => setFuncs([...funcs, func])} />
-      <Extracted saveFunc={(func) => setFuncs([...funcs, func])} />
-      <Extracted saveFunc={(func) => setFuncs([...funcs, func])} />
-      <div>{output}</div>
+      <FunctionStep
+        input={input}
+        saveFunc={(func) => setFuncs([...funcs, func])}
+      />
+      <button onClick={addFunctionStep}>Add Another Function</button>
+      <FunctionStep
+        input={input}
+        saveFunc={(func) => setFuncs([...funcs, func])}
+      />
+      <FunctionStep
+        input={input}
+        saveFunc={(func) => setFuncs([...funcs, func])}
+      />
+      {output}
     </>
   );
 };
